@@ -40,8 +40,9 @@ class CPU:
             print("The address of value  " + str(address) +  " isn't a valid location in memory")
             sys.exit(1)
     
-    def ram_write(self):
-        pass
+    def ram_write(self, value):
+        self.ram.append(value)
+        return value
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
