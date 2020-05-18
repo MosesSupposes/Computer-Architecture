@@ -33,6 +33,15 @@ class CPU:
             self.ram[address] = instruction
             address += 1
 
+    def ram_read(self, address): 
+        try: 
+            return self.ram[address]
+        except IndexError:
+            print("The address of value  " + str(address) +  " isn't a valid location in memory")
+            sys.exit(1)
+    
+    def ram_write(self):
+        pass
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
