@@ -9,7 +9,7 @@ class CPU:
        "HLT": 0b01,
        "LDI": 0b10000010,
        "PRN": 0b01000111,
-       "MUL": 0b10100100
+       "MUL": 0b10100010
     }
 
     def __init__(self):
@@ -24,8 +24,9 @@ class CPU:
         try: 
             with open(program) as p:
                 for instruction in p:
-                    if instruction.strip().split("#")[0] != "":
-                        self.ram_write(address, int(instruction.split("#")[0], 2))
+                    instruction = instruction.strip().split("#")[0]
+                    if instruction != "":
+                        self.ram_write(address, int(instruction, 2))
                         address += 1
         except Exception:
             raise ValueError("Invalid file path.")
@@ -91,7 +92,7 @@ class CPU:
                 self.pc += 2
 
             elif IR == self.commands["MUL"]:
-                self.alu("MUL", self.reg[self.ram[self.pc + 1]], self.reg[self.ram[self.pc + 2]])
+                self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
                 self.pc += 3
 
             else:
