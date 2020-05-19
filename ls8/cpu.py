@@ -21,8 +21,9 @@ class CPU:
 
         with open(program) as p:
             for instruction in p:
-                self.ram_write(address, int(instruction.split("#")[0]))
-                address += 1
+                if instruction.strip().split("#")[0] != "":
+                    self.ram_write(address, int(instruction.split("#")[0], 2))
+                    address += 1
 
     def ram_read(self, address): 
         try: 
