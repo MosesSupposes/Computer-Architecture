@@ -94,8 +94,7 @@ class CPU:
                 self.pc += 2
 
             else:
-                print(f"Invalid Command: {IR}")
-                break
+                raise Exception(f"Invalid Command: {IR}")
         
         # Reset the program counter
         self.pc = 0
