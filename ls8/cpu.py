@@ -1,12 +1,16 @@
 """CPU functionality."""
 
+import sys
+
 class CPU:
+    """Main CPU class."""
+
     commands = {
        "HLT": 0b01,
        "LDI": 0b10000010,
-       "PRN": 0b01000111
+       "PRN": 0b01000111,
+       "MUL": 0b10100100
     }
-    """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
@@ -14,16 +18,30 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self, program):
+    def load(self, program=None):
         """Load a program into memory."""
-
         address = 0
 
-        with open(program) as p:
-            for instruction in p:
-                if instruction.strip().split("#")[0] != "":
-                    self.ram_write(address, int(instruction.split("#")[0], 2))
-                    address += 1
+        def add_instruction_to_memory(instruction):
+            if instruction.strip().split("#")[0] != "":
+                nonlocal address
+                self.ram_write(address, int(instruction.split("#")[0], 2))
+                address += 1
+
+        if __name__ == "__main__":
+            try:
+                with open(sys.argv[1]) as program:
+                    for instruction in program:
+                        add_instruction_to_memory(instruction)
+            except Exception:
+                raise ValueError("Invalid file path.")                
+        else:
+            try: 
+                with open(program) as p:
+                    for instruction in p:
+                        add_instruction_to_memory(instruction)
+            except Exception:
+                raise ValueError("Invalid file path.")
 
     def ram_read(self, address): 
         try: 
@@ -82,6 +100,10 @@ class CPU:
             elif IR == self.commands["PRN"]:
                 print(self.reg[self.ram[self.pc + 1]])
                 self.pc += 2
+
+            elif IR == self.commands["MUL"]:
+                self.alu("MUL", self.reg[self.ram[self.pc + 1]], self.reg[self.ram[self.pc + 2]])
+                self.pc += 3
 
             else:
                 raise Exception(f"Invalid Command: {IR}")
