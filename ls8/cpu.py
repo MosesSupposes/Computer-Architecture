@@ -42,8 +42,8 @@ class CPU:
             raise ValueError("The address of value  " + str(address) +  " isn't a valid location in memory")
             
     
-    def ram_write(self, value):
-        self.ram.append(value)
+    def ram_write(self, address, value):
+        self.ram[address] = value
         return value
 
     def alu(self, op, reg_a, reg_b):
