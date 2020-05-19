@@ -18,37 +18,23 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self, program=None):
+    def load(self, program):
         """Load a program into memory."""
         address = 0
-
-        def add_instruction_to_memory(instruction):
-            if instruction.strip().split("#")[0] != "":
-                nonlocal address
-                self.ram_write(address, int(instruction.split("#")[0], 2))
-                address += 1
-
-        if __name__ == "__main__":
-            try:
-                with open(sys.argv[1]) as program:
-                    for instruction in program:
-                        add_instruction_to_memory(instruction)
-            except Exception:
-                raise ValueError("Invalid file path.")                
-        else:
-            try: 
-                with open(program) as p:
-                    for instruction in p:
-                        add_instruction_to_memory(instruction)
-            except Exception:
-                raise ValueError("Invalid file path.")
+        try: 
+            with open(program) as p:
+                for instruction in p:
+                    if instruction.strip().split("#")[0] != "":
+                        self.ram_write(address, int(instruction.split("#")[0], 2))
+                        address += 1
+        except Exception:
+            raise ValueError("Invalid file path.")
 
     def ram_read(self, address): 
         try: 
             return self.ram[address]
         except IndexError:
             raise ValueError("The address of value  " + str(address) +  " isn't a valid location in memory")
-            
     
     def ram_write(self, address, value):
         self.ram[address] = value
@@ -59,7 +45,10 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+
         else:
             raise Exception("Unsupported ALU operation")
 
