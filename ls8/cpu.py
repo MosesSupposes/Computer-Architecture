@@ -125,6 +125,8 @@ class CPU:
         self.reg[self.pc + 1] = self.reg[SP]
         self.reg[SP] += 1
 
+        self.pc += 2
+
     def run(self):
         """Run the CPU."""
         IR = None
