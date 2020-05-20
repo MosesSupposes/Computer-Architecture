@@ -27,6 +27,8 @@ class CPU:
         """Construct a new CPU."""
         self.ram = [0] * 256 
         self.reg = [0] * 8
+         # Initialize the stack pointer. R7 is the dedicated stack pointer.
+        self.reg[7] = 0xf4
         self.pc = 0
         self.branch_table = {
             "HLT": self.HLT,
@@ -47,8 +49,6 @@ class CPU:
                     if instruction != "":
                         self.ram_write(address, int(instruction, 2))
                         address += 1
-            # Initialize the stack pointer. R7 is the dedicated stack pointer.
-            self.reg[7] = 0xf4
 
         except Exception:
             raise ValueError("Invalid file path.")
