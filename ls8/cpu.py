@@ -9,14 +9,16 @@ class CPU:
         "HLT": 0b01,
         "LDI": 0b10000010,
         "PRN": 0b01000111,
-        "MUL": 0b10100010
+        "MUL": 0b10100010,
+        "PUSH": 0b01000101
     }
 
     commands_inverted = {
         0b01: "HLT",
         0b10000010: "LDI",
         0b01000111: "PRN",
-        0b10100010: "MUL"
+        0b10100010: "MUL",
+        0b01000101: "PUSH"
     }
 
     def __init__(self):
@@ -28,7 +30,8 @@ class CPU:
             "HLT": self.HLT,
             "LDI": self.LDI,
             "PRN": self.PRN,
-            "MUL": self.MUL
+            "MUL": self.MUL,
+            "PUSH": self.PUSH
         }
 
     def load(self, program):
@@ -41,6 +44,9 @@ class CPU:
                     if instruction != "":
                         self.ram_write(address, int(instruction, 2))
                         address += 1
+            # Initialize the stack pointer. R7 is the dedicated stack pointer.
+            self.reg[7] = self.ram[0xf4]
+
         except Exception:
             raise ValueError("Invalid file path.")
 
@@ -101,6 +107,14 @@ class CPU:
     def MUL(self):
         self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
         self.pc += 3
+
+    def PUSH(self):
+        # The seventh register is dedicated to keeping track of the stack pointer
+        SP = 7
+        self.reg[SP] -= 1
+        self.ram[self.reg[SP]] = self.ram[self.pc + 1]
+
+        self.pc += 2
 
     def run(self):
         """Run the CPU."""
