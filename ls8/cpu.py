@@ -10,7 +10,8 @@ class CPU:
         "LDI": 0b10000010,
         "PRN": 0b01000111,
         "MUL": 0b10100010,
-        "PUSH": 0b01000101
+        "PUSH": 0b01000101,
+        "POP": 0b01000110
     }
 
     commands_inverted = {
@@ -18,7 +19,8 @@ class CPU:
         0b10000010: "LDI",
         0b01000111: "PRN",
         0b10100010: "MUL",
-        0b01000101: "PUSH"
+        0b01000101: "PUSH",
+        0b01000110: "POP"
     }
 
     def __init__(self):
@@ -31,7 +33,8 @@ class CPU:
             "LDI": self.LDI,
             "PRN": self.PRN,
             "MUL": self.MUL,
-            "PUSH": self.PUSH
+            "PUSH": self.PUSH,
+            "POP": self.POP
         }
 
     def load(self, program):
@@ -115,6 +118,12 @@ class CPU:
         self.ram[self.reg[SP]] = self.ram[self.pc + 1]
 
         self.pc += 2
+    
+    def POP(self):
+        # The seventh register is dedicated to keeping track of the stack pointer
+        SP = 7 
+        self.reg[self.pc + 1] = self.reg[SP]
+        self.reg[SP] += 1
 
     def run(self):
         """Run the CPU."""
