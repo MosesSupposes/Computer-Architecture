@@ -48,7 +48,7 @@ class CPU:
                         self.ram_write(address, int(instruction, 2))
                         address += 1
             # Initialize the stack pointer. R7 is the dedicated stack pointer.
-            self.reg[7] = self.ram[0xf4]
+            self.reg[7] = 0xf4
 
         except Exception:
             raise ValueError("Invalid file path.")
@@ -115,7 +115,7 @@ class CPU:
         # The seventh register is dedicated to keeping track of the stack pointer
         SP = 7
         self.reg[SP] -= 1
-        self.ram[self.reg[SP]] = self.ram[self.pc + 1]
+        self.ram[self.reg[SP]] = self.reg[self.pc + 1]
 
         self.pc += 2
     
