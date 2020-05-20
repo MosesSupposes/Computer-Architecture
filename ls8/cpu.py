@@ -6,10 +6,17 @@ class CPU:
     """Main CPU class."""
 
     commands = {
-       "HLT": 0b01,
-       "LDI": 0b10000010,
-       "PRN": 0b01000111,
-       "MUL": 0b10100010
+        "HLT": 0b01,
+        "LDI": 0b10000010,
+        "PRN": 0b01000111,
+        "MUL": 0b10100010
+    }
+
+    commands_inverted = {
+        0b01: "HLT",
+        0b10000010: "LDI",
+        0b01000111: "PRN",
+        0b10100010: "MUL"
     }
 
     def __init__(self):
@@ -17,6 +24,12 @@ class CPU:
         self.ram = [0] * 256 
         self.reg = [0] * 8
         self.pc = 0
+        self.branch_table = {
+            "HLT": self.HLT,
+            "LDI": self.LDI,
+            "PRN": self.PRN,
+            "MUL": self.MUL
+        }
 
     def load(self, program):
         """Load a program into memory."""
@@ -73,28 +86,30 @@ class CPU:
 
         print()
 
+    def HLT(self):
+        self.pc += 1
+        sys.exit(0) 
+
+    def LDI(self):
+        self.reg[self.ram[self.pc + 1]] = self.ram[self.pc + 2]
+        self.pc += 3
+    
+    def PRN(self):
+        print(self.reg[self.ram[self.pc + 1]])
+        self.pc += 2
+    
+    def MUL(self):
+        self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
+
     def run(self):
         """Run the CPU."""
         IR = None
         while IR != self.commands["HLT"]:
             IR = self.ram_read(self.pc)
 
-            if IR == self.commands["HLT"]:
-                self.pc += 1
-                break
-
-            elif IR == self.commands["LDI"]:
-                self.reg[self.ram[self.pc + 1]] = self.ram[self.pc + 2]
-                self.pc += 3
-            
-            elif IR == self.commands["PRN"]:
-                print(self.reg[self.ram[self.pc + 1]])
-                self.pc += 2
-
-            elif IR == self.commands["MUL"]:
-                self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
-                self.pc += 3
-
+            if IR in self.commands_inverted:
+                self.branch_table[self.commands_inverted[IR]]()
             else:
                 raise Exception(f"Invalid Command: {IR}")
         
