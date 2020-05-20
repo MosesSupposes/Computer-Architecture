@@ -1,12 +1,16 @@
 """CPU functionality."""
 
+import sys
+
 class CPU:
+    """Main CPU class."""
+
     commands = {
        "HLT": 0b01,
        "LDI": 0b10000010,
-       "PRN": 0b01000111
+       "PRN": 0b01000111,
+       "MUL": 0b10100010
     }
-    """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
@@ -14,33 +18,24 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
 
-    def load(self):
+    def load(self, program):
         """Load a program into memory."""
-
         address = 0
-
-        # For now, we've just hardcoded a program:
-
-        program = [
-            # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
-        ]
-
-        for instruction in program:
-            self.ram[address] = instruction
-            address += 1
+        try: 
+            with open(program) as p:
+                for instruction in p:
+                    instruction = instruction.strip().split("#")[0]
+                    if instruction != "":
+                        self.ram_write(address, int(instruction, 2))
+                        address += 1
+        except Exception:
+            raise ValueError("Invalid file path.")
 
     def ram_read(self, address): 
         try: 
             return self.ram[address]
         except IndexError:
             raise ValueError("The address of value  " + str(address) +  " isn't a valid location in memory")
-            
     
     def ram_write(self, address, value):
         self.ram[address] = value
@@ -51,7 +46,10 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -92,6 +90,10 @@ class CPU:
             elif IR == self.commands["PRN"]:
                 print(self.reg[self.ram[self.pc + 1]])
                 self.pc += 2
+
+            elif IR == self.commands["MUL"]:
+                self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
+                self.pc += 3
 
             else:
                 raise Exception(f"Invalid Command: {IR}")
