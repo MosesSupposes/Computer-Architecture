@@ -122,7 +122,7 @@ class CPU:
     def POP(self):
         # The seventh register is dedicated to keeping track of the stack pointer
         SP = 7 
-        self.reg[self.pc + 1] = self.reg[SP]
+        self.reg[self.pc + 1] = self.ram[self.reg[SP]]
         self.reg[SP] += 1
 
         self.pc += 2
