@@ -142,7 +142,10 @@ class CPU:
         self.pc = self.ram[self.pc + 1]
     
     def RET(self):
-        pass
+        SP = 7 
+        address_to_jump_to = self.ram[self.reg[SP]]
+        self.reg[SP] += 1
+        self.pc = address_to_jump_to
 
     def run(self):
         """Run the CPU."""
