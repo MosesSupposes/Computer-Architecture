@@ -139,7 +139,7 @@ class CPU:
         # Push the return address onto the stack
         self.ram[self.reg[SP]] = self.pc + 2
         # Jump to the pc held in the given register
-        self.pc = self.ram[self.pc + 1]
+        self.pc = self.reg[self.ram[self.pc + 1]]
     
     def RET(self):
         SP = 7 
