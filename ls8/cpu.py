@@ -11,7 +11,8 @@ class CPU:
         "PRN": 0b01000111,
         "MUL": 0b10100010,
         "PUSH": 0b01000101,
-        "POP": 0b01000110
+        "POP": 0b01000110,
+        "CALL": 0b01010000
     }
 
     commands_inverted = {
@@ -20,7 +21,8 @@ class CPU:
         0b01000111: "PRN",
         0b10100010: "MUL",
         0b01000101: "PUSH",
-        0b01000110: "POP"
+        0b01000110: "POP",
+        0b01010000: "CALL"
     }
 
     def __init__(self):
@@ -36,7 +38,8 @@ class CPU:
             "PRN": self.PRN,
             "MUL": self.MUL,
             "PUSH": self.PUSH,
-            "POP": self.POP
+            "POP": self.POP,
+            "CALL": self.CALL
         }
 
     def load(self, program):
@@ -125,6 +128,16 @@ class CPU:
         self.reg[self.ram[self.pc + 1]] = self.ram[self.reg[SP]]
         self.reg[SP] += 1
 
+        self.pc += 2
+    
+    def CALL(self):
+        SP = 7
+        self.reg[SP] -= 1
+        # Push the return address onto the stack
+        self.ram[self.reg[SP]] = self.pc + 2
+        # Jump to the pc held in the given register
+        self.pc = self.ram[self.pc + 1]
+        
         self.pc += 2
 
     def run(self):
