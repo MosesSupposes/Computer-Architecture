@@ -9,17 +9,19 @@ class CPU:
         "HLT": 0b01,
         "LDI": 0b10000010,
         "PRN": 0b01000111,
+        "ADD": 0b10100000,
         "MUL": 0b10100010,
         "PUSH": 0b01000101,
         "POP": 0b01000110,
         "CALL": 0b01010000,
-        "RET": 0b00010001
+        "RET": 0b00010001,
     }
 
     commands_inverted = {
         0b01: "HLT",
         0b10000010: "LDI",
         0b01000111: "PRN",
+        0b10100000: "ADD",
         0b10100010: "MUL",
         0b01000101: "PUSH",
         0b01000110: "POP",
@@ -38,6 +40,7 @@ class CPU:
             "HLT": self.HLT,
             "LDI": self.LDI,
             "PRN": self.PRN,
+            "ADD": self.ADD,
             "MUL": self.MUL,
             "PUSH": self.PUSH,
             "POP": self.POP,
@@ -55,7 +58,6 @@ class CPU:
                     if instruction != "":
                         self.ram_write(address, int(instruction, 2))
                         address += 1
-
         except Exception:
             raise ValueError("Invalid file path.")
 
@@ -112,6 +114,10 @@ class CPU:
     def PRN(self):
         print(self.reg[self.ram[self.pc + 1]])
         self.pc += 2
+
+    def ADD(self):
+        self.alu("ADD", self.ram[self.pc + 1], self.ram[self.pc + 2])
+        self.pc += 3
     
     def MUL(self):
         self.alu("MUL", self.ram[self.pc + 1], self.ram[self.pc + 2])
